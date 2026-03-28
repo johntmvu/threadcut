@@ -45,6 +45,7 @@ function sleep(ms: number) {
 export default function Home() {
   const [topic, setTopic] = useState("");
   const [style, setStyle] = useState("educational");
+  const [music, setMusic] = useState(false);
   const [stage, setStage] = useState<Stage>("idle");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [script, setScript] = useState<Script | null>(null);
@@ -74,7 +75,7 @@ export default function Home() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, style }),
+        body: JSON.stringify({ topic, style, music }),
       });
 
       const data = await res.json();
@@ -140,6 +141,18 @@ export default function Home() {
             </button>
           ))}
         </div>
+
+        {/* Music toggle */}
+        <button
+          type="button"
+          onClick={() => setMusic((m) => !m)}
+          className="flex items-center gap-3 cursor-pointer select-none w-fit"
+        >
+          <div className={`w-10 h-6 rounded-full transition-colors relative ${music ? "bg-red-500" : "bg-zinc-700"}`}>
+            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${music ? "translate-x-5" : "translate-x-1"}`} />
+          </div>
+          <span className="text-sm text-zinc-400">Background music</span>
+        </button>
 
         {/* Generate button */}
         <button

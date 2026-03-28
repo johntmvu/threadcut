@@ -4,7 +4,7 @@ import { buildAndRender } from "@/lib/shotstack";
 
 export async function POST(req: NextRequest) {
   try {
-    const { clips, audioUrl, scenes } = await req.json();
+    const { clips, audioUrl, title, scenes } = await req.json();
 
     if (!clips || !audioUrl || !scenes) {
       return NextResponse.json(
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const videoUrl = await buildAndRender(clips, audioUrl, scenes);
+    const videoUrl = await buildAndRender(clips, audioUrl, title ?? "", scenes);
     return NextResponse.json({ videoUrl });
   } catch (error: any) {
     console.error("Render error:", error?.message || error);

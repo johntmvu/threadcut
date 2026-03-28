@@ -45,3 +45,43 @@ export async function generateVoiceover(narration: string, style?: string): Prom
 
   return cloudRes.data.secure_url;
 }
+
+const MUSIC_PROMPTS: Record<string, string> = {
+  educational: "calm ambient background music, soft piano melody, gentle and minimal",
+  hype:        "energetic upbeat electronic music, driving beat, high energy",
+  storytelling:"cinematic atmospheric background music, emotional strings, building tension",
+  promo:       "upbeat corporate background music, modern and polished, optimistic",
+  brainrot:    "chaotic trap beat, gaming music, hyper energetic bass drop",
+};
+
+export async function generateBackgroundMusic(style?: string): Promise<string> {
+  const prompt = MUSIC_PROMPTS[style ?? "educational"] ?? MUSIC_PROMPTS.educational;
+
+  const response = await axios.post(
+    "https://api.elevenlabs.io/v1/sound-generation",
+    { text: prompt, duration_seconds: 22, prompt_influence: 0.4 },
+    {
+      headers: {
+        "xi-api-key": process.env.ELEVENLABS_API_KEY!,
+        "Content-Type": "application/json",
+        Accept: "audio/mpeg",
+      },
+      responseType: "arraybuffer",
+    }
+  );
+
+  const audioBuffer = Buffer.from(response.data);
+  const base64Audio = audioBuffer.toString("base64");
+
+  const formData = new FormData();
+  formData.append("file", `data:audio/mp3;base64,${base64Audio}`);
+  formData.append("upload_preset", "threadcut_audio");
+  formData.append("resource_type", "video");
+
+  const cloudRes = await axios.post(
+    `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload`,
+    formData
+  );
+
+  return cloudRes.data.secure_url;
+}

@@ -7,54 +7,57 @@ export interface Clip {
   duration: number;
 }
 
-export async function fetchClipForScene(
+const CLIPS_PER_SCENE = 2;
+
+async function fetchClipsForScene(
   sceneNumber: number,
   query: string,
-  duration: number
-): Promise<Clip> {
+  sceneDuration: number,
+  isFallback = false
+): Promise<Clip[]> {
   try {
     const response = await axios.get("https://api.pexels.com/videos/search", {
       headers: { Authorization: process.env.PEXELS_API_KEY! },
       params: {
         query,
-        per_page: 5,
+        per_page: 10,
         size: "medium",
-        orientation: "portrait", // vertical 9:16
+        orientation: "portrait",
       },
     });
 
     const videos = response.data.videos;
 
     if (!videos || videos.length === 0) {
-      // Fallback to a generic query
-      return fetchClipForScene(sceneNumber, "cinematic nature footage", duration);
+      if (isFallback) throw new Error(`No results for scene ${sceneNumber}`);
+      return fetchClipsForScene(sceneNumber, "cinematic nature footage", sceneDuration, true);
     }
 
-    // Pick the first video that has a file close to our needed duration
-    const video = videos[0];
-    const file = video.video_files.find(
-      (f: any) => f.quality === "sd" && f.width < f.height // portrait only
-    ) || video.video_files[0];
+    const subDuration = sceneDuration / CLIPS_PER_SCENE;
+    interface PexelsFile { quality: string; width: number; height: number; link: string; }
+    interface PexelsVideo { video_files: PexelsFile[]; }
 
-    return {
-      sceneNumber,
-      url: file.link,
-      duration,
-    };
+    const picked: PexelsVideo[] = videos.slice(0, CLIPS_PER_SCENE);
+
+    return picked.map((video) => {
+      const file =
+        video.video_files.find(
+          (f) => f.quality === "sd" && f.width < f.height
+        ) || video.video_files[0];
+      return { sceneNumber, url: file.link, duration: subDuration };
+    });
   } catch (error) {
     console.error(`Pexels fetch failed for query "${query}":`, error);
-    throw new Error(`Failed to fetch visual for scene ${sceneNumber}`);
+    throw new Error(`Failed to fetch visuals for scene ${sceneNumber}`);
   }
 }
 
 export async function fetchAllClips(
   scenes: { number: number; visualQuery: string; duration: number }[]
-): Promise<Clip[]> {
-  // Fetch all clips in parallel
-  const clips = await Promise.all(
+): Promise<Clip[][]> {
+  return Promise.all(
     scenes.map((scene) =>
-      fetchClipForScene(scene.number, scene.visualQuery, scene.duration)
+      fetchClipsForScene(scene.number, scene.visualQuery, scene.duration)
     )
   );
-  return clips;
 }
