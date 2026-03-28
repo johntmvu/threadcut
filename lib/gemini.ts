@@ -53,6 +53,8 @@ Rules:
 - Scenes 2-3 (7s each): Core value or information
 - Scene 4 (7s): CTA — follow, share, visit, or buy
 - All scene durations must sum to exactly 28
+- Each scene narration must be 12-15 words maximum (7 seconds of speech)
+- Total narration across all scenes must be 50-60 words maximum
 - visualQuery must be specific and searchable (e.g. "person drinking coffee cafe" not "coffee")
 - Script tone must match style: ${style}
 - Topic: ${topic}
