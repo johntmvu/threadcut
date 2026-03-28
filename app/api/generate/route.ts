@@ -5,6 +5,8 @@ import { fetchAllClips } from "@/lib/pexels";
 import { generateVoiceover } from "@/lib/elevenlabs";
 import { buildAndRender } from "@/lib/shotstack";
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const { topic, style } = await req.json();
