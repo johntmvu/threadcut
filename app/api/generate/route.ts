@@ -25,10 +25,10 @@ export async function POST(req: NextRequest) {
     const clips = await fetchAllClips(script.scenes);
 
     console.log("🎙️ Agent 4: Generating voiceover...");
-    const audioUrl = await generateVoiceover(script.narration);
+    const audioUrl = await generateVoiceover(script.narration, style);
 
     console.log("🎞️ Agent 5: Rendering video...");
-    const videoUrl = await buildAndRender(clips, audioUrl, script.scenes);
+    const videoUrl = await buildAndRender(clips, audioUrl, script.scenes, style);
 
     console.log("✅ Pipeline complete:", videoUrl);
 

@@ -19,14 +19,23 @@ interface Scene {
   duration: number;
 }
 
+// Replace with your own hosted subway surfers gameplay MP4
+const SUBWAY_SURFERS_URL =
+  process.env.SUBWAY_SURFERS_VIDEO_URL ||
+  "https://res.cloudinary.com/threadcut/video/upload/subway_surfers_loop.mp4";
+
 export async function buildAndRender(
   clips: Clip[],
   audioUrl: string,
-  scenes: Scene[]
+  scenes: Scene[],
+  style?: string
 ): Promise<string> {
+  const isBrainrot = style === "brainrot";
   const startTimes = scenes.map((_, i) =>
     scenes.slice(0, i).reduce((acc, s) => acc + s.duration, 0)
   );
+
+  const totalDuration = scenes.reduce((acc, s) => acc + s.duration, 0);
 
   const videoClips = clips.map((clip, i) => ({
     asset: {
@@ -37,6 +46,7 @@ export async function buildAndRender(
     start: startTimes[i],
     length: scenes[i].duration,
     fit: "cover",
+    ...(isBrainrot && { position: "top", scale: 0.5 }),
   }));
 
   const captionClips = scenes.map((scene, i) => ({
@@ -49,9 +59,26 @@ export async function buildAndRender(
     },
     start: startTimes[i],
     length: scenes[i].duration,
-    position: "bottom",
-    offset: { y: 0.15 },
+    position: isBrainrot ? "top" : "bottom",
+    offset: isBrainrot ? { y: -0.1 } : { y: 0.15 },
   }));
+
+  const subwayTrack = isBrainrot
+    ? [
+        {
+          clips: [
+            {
+              asset: { type: "video", src: SUBWAY_SURFERS_URL, volume: 0 },
+              start: 0,
+              length: totalDuration,
+              fit: "cover",
+              position: "bottom",
+              scale: 0.5,
+            },
+          ],
+        },
+      ]
+    : [];
 
   const payload = {
     timeline: {
@@ -63,6 +90,7 @@ export async function buildAndRender(
       tracks: [
         { clips: captionClips },
         { clips: videoClips },
+        ...subwayTrack,
       ],
     },
     output: {

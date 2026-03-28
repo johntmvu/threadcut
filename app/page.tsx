@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const STYLES = ["educational", "hype", "storytelling", "promo"];
+const STYLES = ["educational", "hype", "storytelling", "promo", "brainrot"];
 
 type Scene = {
   number: number;

@@ -19,8 +19,16 @@ export interface Script {
 }
 
 export async function generateScript(topic: string, style: string): Promise<Script> {
+  const isBrainrot = style === "brainrot";
+
+  const toneInstructions = isBrainrot
+    ? `You are an unhinged, hyperactive Gen Z scriptwriter who writes in pure brainrot internet speak.
+Use ALL CAPS randomly, excessive punctuation!!!, meme references, "no cap", "fr fr", "Ohio", "rizz", "slay", "delulu", "it's giving", "W", "L", "based", "lowkey", "ngl", chaotic energy throughout.
+Short punchy sentences. Every scene must feel like it was written at 3am after too much energy drink.`
+    : `You are a professional short-form video scriptwriter specializing in viral TikTok and Instagram Reels.`;
+
   const prompt = `
-You are a professional short-form video scriptwriter specializing in viral TikTok and Instagram Reels.
+${toneInstructions}
 
 Given a topic or brand, generate a complete 28-second video script broken into exactly 4 scenes.
 
