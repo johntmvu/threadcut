@@ -35,7 +35,7 @@ Given a topic or brand, generate a complete 28-second video script broken into e
 Respond with valid JSON only. No preamble, no markdown fences, no explanation.
 
 {
-  "title": "Punchy video title (max 3 words)",
+  "title": "Punchy video title (max 2 words)",
   "narration": "Full voiceover script as one continuous paragraph",
   "scenes": [
     {

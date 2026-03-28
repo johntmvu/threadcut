@@ -25,9 +25,15 @@ export async function POST(req: NextRequest) {
     const clips = await fetchAllClips(script.scenes);
 
     console.log("🎙️ Agent 4: Generating voiceover...");
+    console.log("🎵 Music requested:", music);
     const [audioUrl, musicUrl] = await Promise.all([
       generateVoiceover(script.narration, style),
-      music ? generateBackgroundMusic(style) : Promise.resolve(undefined),
+      music === true
+        ? generateBackgroundMusic(style).catch((err) => {
+            console.error("⚠️ Background music failed, continuing without it:", err?.message);
+            return undefined;
+          })
+        : Promise.resolve(undefined),
     ]);
 
     console.log("🎞️ Agent 5: Rendering video...");

@@ -10,6 +10,7 @@ export async function generateVoiceover(narration: string, style?: string): Prom
   const voiceId = isBrainrot ? VOICE_BRAINROT : VOICE_NORMAL;
 
   // Step 1: Generate audio binary from ElevenLabs
+  console.log("🎙️ Calling ElevenLabs TTS...");
   const response = await axios.post(
     `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
     {
@@ -30,6 +31,7 @@ export async function generateVoiceover(narration: string, style?: string): Prom
   );
 
   // Step 2: Upload to Cloudinary (free, no auth needed for unsigned uploads)
+  console.log("☁️ Uploading voiceover to Cloudinary...");
   const audioBuffer = Buffer.from(response.data);
   const base64Audio = audioBuffer.toString("base64");
 
