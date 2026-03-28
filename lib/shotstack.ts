@@ -42,25 +42,31 @@ export async function buildAndRender(
       type: "video",
       src: clip.url,
       volume: 0,
+      ...(isBrainrot && { crop: { top: 0.15, bottom: 0.15, left: 0, right: 0 } }),
     },
     start: startTimes[i],
     length: scenes[i].duration,
     fit: "cover",
-    ...(isBrainrot && { position: "top", scale: 0.5 }),
+    ...(isBrainrot && { scale: 0.6, position: "top", offset: { y: -0.05 } }),
   }));
+
+  const captionCss = `@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+       p { font-family: 'Anton', sans-serif; font-size: 34px; font-weight: 900; color: white;
+           text-align: center; letter-spacing: 1px; padding: 8px; line-height: 1; margin: 0;
+           white-space: nowrap; }`;
 
   const captionClips = scenes.map((scene, i) => ({
     asset: {
       type: "html",
       html: `<p>${scene.caption}</p>`,
-      css: "p { font-family: 'Montserrat', sans-serif; font-size: 36px; font-weight: 800; color: white; text-shadow: 2px 2px 8px rgba(0,0,0,0.8); text-align: center; padding: 10px; }",
-      width: 400,
-      height: 100,
+      css: captionCss,
+      width: 500,
+      height: 80,
     },
     start: startTimes[i],
     length: scenes[i].duration,
-    position: isBrainrot ? "top" : "bottom",
-    offset: isBrainrot ? { y: -0.1 } : { y: 0.15 },
+    position: "center",
+    offset: { y: isBrainrot ? -0.25 : -0.3 },
   }));
 
   const subwayTrack = isBrainrot
@@ -72,8 +78,6 @@ export async function buildAndRender(
               start: 0,
               length: totalDuration,
               fit: "cover",
-              position: "bottom",
-              scale: 0.5,
             },
           ],
         },

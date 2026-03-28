@@ -42,7 +42,7 @@ Respond with valid JSON only. No preamble, no markdown fences, no explanation.
       "number": 1,
       "narration": "Spoken words for this scene only",
       "visualQuery": "Specific Pexels stock video search term (3-5 words)",
-      "caption": "Short on-screen text (max 6 words)",
+      "caption": "Short on-screen text (max 3 words)",
       "duration": 7
     }
   ]
